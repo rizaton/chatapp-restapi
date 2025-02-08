@@ -1,0 +1,45 @@
+// Method: GET Read all User
+GET url HTTP/127.0.0.1:8000/api/users
+Content-Type: application/json
+Accept: */*
+
+// Method: GET Read one User
+GET url HTTP/127.0.0.1:8000/api/users/67a459882514aa9cc7d450a6
+Content-Type: application/json
+Accept: */*
+
+// Method: GET Read one User Chat rooms
+GET url HTTP/127.0.0.1:8000/api/users/chatrooms/67a459882514aa9cc7d450a6
+Content-Type: application/json
+Accept: */*
+
+// Method: POST Create User
+POST url HTTP/127.0.0.1:8000/api/users/create
+Content-Type: application/json
+Accept: */*
+{
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "password": "password"
+}
+
+
+// Method: GET Read all Chat room
+GET url HTTP/127.0.0.1:8000/api/chatrooms
+Content-Type: application/json
+Accept: */*
+
+// Method: GET Read all Message
+GET url HTTP/127.0.0.1:8000/api/messages
+Content-Type: application/json
+Accept: */*
+
+// Method: GET Read all Call log
+GET url HTTP/127.0.0.1:8000/api/calllogs
+Content-Type: application/json
+Accept: */*
+
+// Method: GET Read all Notification
+GET url HTTP/127.0.0.1:8000/api/notifications
+Content-Type: application/json
+Accept: */*
