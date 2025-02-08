@@ -19,6 +19,7 @@ export const registerUser = async (req, res) => {
     if (userEmailExists) {
       return res.status(400).json({ message: "Email already exists" });
     }
+
     if (userNameExists) {
       return res.status(400).json({ message: "Username already exists" });
     }
@@ -77,5 +78,16 @@ export const refreshToken = async (req, res) => {
     res
       .status(403)
       .json({ message: "Refresh token tidak valid atau sudah kadaluarsa" });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    await redisClient.del(userId.toString());
+    res.json({ message: "Logout berhasil" });
+  } catch (error) {
+    writeLogToFile(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
