@@ -11,14 +11,16 @@ const redisClient = createClient({
   },
 });
 
-redisClient.on("error", (err) => {
-  writeLogToFile(error);
-  console.error("[X] Redis Error:", err);
-});
-
-(async () => {
-  await redisClient.connect();
-  console.log("[/] Connected to Redis");
-})();
+try {
+  (async () => {
+    await redisClient.connect();
+    console.log("[/] Connected to Redis");
+  })();
+} catch (error) {
+  redisClient.on("error", (err) => {
+    writeLogToFile(error);
+    console.error("[X] Redis Error:", err);
+  });
+}
 
 export default redisClient;
