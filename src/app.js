@@ -8,12 +8,10 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
 
-import http from "http";
-import initSocket from "./socket.js";
-
 dotenv.config();
 
 const app = express();
+
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
@@ -26,7 +24,4 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/calllogs", callLogRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-export const server = http.createServer(app);
-export const io = initSocket(server);
-
-export default server;
+export default app;
