@@ -1,0 +1,9 @@
+// Method: POST Login
+POST url HTTP/127.0.0.1:8000/api/users
+Content-Type: application/json
+Accept: */*
+{
+    "email": "rizaton@gmail.com"
+    "password": "123456"
+}
+###

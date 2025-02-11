@@ -4,29 +4,30 @@ import { writeLogToFile } from "../utils/logUtils.js";
 
 dotenv.config();
 
-try {
-  const redis = createClient({
-    socket: {
-      host: process.env.REDIS_HOST || "127.0.0.1",
-      port: process.env.REDIS_PORT || 6379,
-    },
-  });
+let redisClient;
 
+(async () => {
   try {
-    (async () => {
-      await redisClient.connect();
-      console.log("[/] Connected to Redis");
-    })();
-  } catch (error) {
-    redisClient.on("error", (err) => {
-      writeLogToFile(error);
-      console.error("[X] Redis Error:", err);
+    redisClient = createClient({
+      socket: {
+        host: process.env.REDIS_HOST || "127.0.0.1",
+        port: process.env.REDIS_PORT || 6379,
+      },
+      password: process.env.REDIS_PASSWORD,
     });
-  }
-} catch (error) {
-  const redis = null;
-  writeLogToFile(error);
-  console.error("[X] Redis Error:", error);
-}
 
-export const redisClient = redis;
+    redisClient.on("error", (err) => {
+      console.error("[X] Redis Error:", err);
+      writeLogToFile(err);
+    });
+
+    await redisClient.connect();
+    console.log("[/] Connected to Redis");
+  } catch (error) {
+    redisClient = null;
+    console.error("[X] Failed to connect to Redis:", error);
+    writeLogToFile(error);
+  }
+})();
+
+export default redisClient;
