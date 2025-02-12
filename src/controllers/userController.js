@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import ChatRoom from "../models/ChatRoom.js";
 
-export const readUser = async (req, res) => {
+export const readUsers = async (req, res) => {
   const users = await User.find();
   res.status(200).json(users);
 };

@@ -2,6 +2,58 @@ import swaggerJSDoc from "swagger-jsdoc";
 
 /**
  * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication endpoints
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User endpoints.
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: ChatRooms
+ *   description: ChatRoom endpoints
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Messages
+ *   description: Message endpoints
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Notifications
+ *   description: Notification endpoints
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: CallLogs
+ *   description: CallLog endpoints
+ */
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @swagger
  * components:
  *   schemas:
  *     User:
@@ -42,38 +94,43 @@ import swaggerJSDoc from "swagger-jsdoc";
  *         avatar_url: "https://example.com/avatar.jpg"
  *         status: online
  *         created_at: "2024-02-12T12:34:56Z"
- *
- *     Notification:
+ *     ChatRoom:
  *       type: object
  *       required:
- *         - user
- *         - type
+ *         - name
  *       properties:
- *         user:
+ *         name:
  *           type: string
- *           format: ObjectId
- *           description: User who receives the notification
- *         type:
- *           type: string
- *           enum: ["message", "call", "mention"]
- *           description: Type of notification
- *         content:
- *           type: string
- *           description: Notification content
- *         isRead:
+ *           description: Chat room name
+ *         isGroup:
  *           type: boolean
- *           description: Read status of the notification
+ *           description: Whether the chat room is a group chat
+ *         members:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 format: ObjectId
+ *                 description: User ID
+ *               role:
+ *                 type: string
+ *                 enum: ["admin", "member"]
+ *                 description: User role in the chat
  *         createdAt:
  *           type: string
  *           format: date-time
- *           description: Timestamp of notification creation
+ *           description: Timestamp of chat room creation
  *       example:
- *         user: "60f7e2c6a7c2e63f3c2b9b57"
- *         type: message
- *         content: "You have a new message"
- *         isRead: false
+ *         name: "Developers Chat"
+ *         isGroup: true
+ *         members:
+ *           - userId: "60f7e2c6a7c2e63f3c2b9b57"
+ *             role: admin
+ *           - userId: "60f7e2c6a7c2e63f3c2b9b58"
+ *             role: member
  *         createdAt: "2024-02-12T12:34:56Z"
- *
  *     Message:
  *       type: object
  *       required:
@@ -139,45 +196,6 @@ import swaggerJSDoc from "swagger-jsdoc";
  *           editedAt: null
  *           deleted: false
  *         createdAt: "2024-02-12T12:34:56Z"
- *
- *     ChatRoom:
- *       type: object
- *       required:
- *         - name
- *       properties:
- *         name:
- *           type: string
- *           description: Chat room name
- *         isGroup:
- *           type: boolean
- *           description: Whether the chat room is a group chat
- *         members:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               userId:
- *                 type: string
- *                 format: ObjectId
- *                 description: User ID
- *               role:
- *                 type: string
- *                 enum: ["admin", "member"]
- *                 description: User role in the chat
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: Timestamp of chat room creation
- *       example:
- *         name: "Developers Chat"
- *         isGroup: true
- *         members:
- *           - userId: "60f7e2c6a7c2e63f3c2b9b57"
- *             role: admin
- *           - userId: "60f7e2c6a7c2e63f3c2b9b58"
- *             role: member
- *         createdAt: "2024-02-12T12:34:56Z"
- *
  *     CallLog:
  *       type: object
  *       required:
@@ -226,10 +244,36 @@ import swaggerJSDoc from "swagger-jsdoc";
  *         startedAt: "2024-02-12T12:30:00Z"
  *         duration: 300
  *         endedAt: "2024-02-12T12:35:00Z"
- *
- * @swagger
- * tags:
- *   name: Endpoints
+ *     Notification:
+ *       type: object
+ *       required:
+ *         - user
+ *         - type
+ *       properties:
+ *         user:
+ *           type: string
+ *           format: ObjectId
+ *           description: User who receives the notification
+ *         type:
+ *           type: string
+ *           enum: ["message", "call", "mention"]
+ *           description: Type of notification
+ *         content:
+ *           type: string
+ *           description: Notification content
+ *         isRead:
+ *           type: boolean
+ *           description: Read status of the notification
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp of notification creation
+ *       example:
+ *         user: "60f7e2c6a7c2e63f3c2b9b57"
+ *         type: message
+ *         content: "You have a new message"
+ *         isRead: false
+ *         createdAt: "2024-02-12T12:34:56Z"
  */
 
 const swaggerSpec = swaggerJSDoc({

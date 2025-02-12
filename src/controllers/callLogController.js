@@ -7,6 +7,16 @@ export const readCallLogs = async (req, res) => {
   res.status(200).json(callLogs);
 };
 
+export const readOneCallLog = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const callLog = await CallLog.findById(_id);
+    res.status(200).json(callLog);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 export const readUserCallLogs = async (req, res) => {
   try {
     const { _id } = req.params;
