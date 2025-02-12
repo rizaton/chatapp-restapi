@@ -7,37 +7,10 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+networks:
+  chatapplan:
+    driver: bridge
 services:
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb.chatapp
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: adminpassword
-    ports:
-      - "27017:27017"
-
-  redis:
-    image: redis:latest
-    container_name: redis.chatapp
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    env_file:
-      - .env
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-
-  # localtonet:
-  #   image: localtonet/localtonet:latest
-  #   container_name: localtonet-chatapp
-  #   restart: unless-stopped
-  #   env_file:
-  #     - .env
-  #   command: ["authtoken", "${LOCALTONET_TOKEN}"]
-
   server:
     build:
       context: .
@@ -46,46 +19,54 @@ services:
     depends_on:
       - redis
       - mongodb
+      - localtonet
     environment:
+      HOST: 0.0.0.0
       NODE_ENV: production
       MONGO_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/chatapp?authSource=${MONGO_INITDB_ROOT_USERNAME}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_HOST: redis-chatapp
     volumes:
       - ./logs.txt:/usr/src/app/logs.txt
     env_file:
       - .env
     ports:
       - "8000:8000"
+    networks:
+      - chatapplan
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-chatapp
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: adminpassword
+    ports:
+      - "27017:27017"
+    networks:
+      - chatapplan
 
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker-compose up`.
-#     depends_on:
-#       db:
-#         condition: service_healthy
-#   db:
-#     image: postgres
-#     restart: always
-#     user: postgres
-#     secrets:
-#       - db-password
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     environment:
-#       - POSTGRES_DB=example
-#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-#     expose:
-#       - 5432
-#     healthcheck:
-#       test: [ "CMD", "pg_isready" ]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-# volumes:
-#   db-data:
-# secrets:
-#   db-password:
-#     file: db/password.txt
+  redis:
+    image: redis:latest
+    container_name: redis-chatapp
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    env_file:
+      - .env
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    networks:
+      - chatapplan
 
+  localtonet:
+    image: localtonet/localtonet:latest
+    container_name: localtonet-chatapp
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: ["authtoken", "${LOCALTONET_TOKEN}"]
+    networks:
+      - chatapplan
