@@ -5,6 +5,8 @@ import messageRoutes from "./routes/messageRoutes.js";
 import callLogRoutes from "./routes/callLogRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swagger.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
@@ -18,10 +20,11 @@ app.use(
   })
 );
 
-app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
   res.status(200).send("Server is running");
 });
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api/auth", authRoutes);
 
 app.use("/api/users", protect, userRoutes);
 app.use("/api/chatrooms", protect, chatRoomRoutes);
