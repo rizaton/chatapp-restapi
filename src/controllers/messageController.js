@@ -3,6 +3,8 @@ import ChatRoom from "../models/ChatRoom.js";
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 
+// RESTAPI CONTROLLERS
+
 export const readMessage = async (req, res) => {
   const messages = await Message.find();
   res.status(200).json(messages);
@@ -98,5 +100,50 @@ export const deleteMessage = async (req, res) => {
     res.status(200).json({ message: "Message deleted" });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+// SOCKET CONTROLLERS
+
+export const sendMessage = async (io, socket, data) => {
+  try {
+    const { chatRoom, sender, content, messageType } = data;
+
+    const chatroom = await ChatRoom.findById(chatRoom);
+    if (!chatroom) {
+      return socket.emit("error", { message: "ChatRoom not found" });
+    }
+    if (!content) {
+      return socket.emit("error", { message: "Content is required" });
+    }
+    const user = await User.findById(sender);
+    const recipients = chatroom.members.filter(
+      (member) => !member.userId.equals(sender)
+    );
+    const status = recipients.map((member) => ({
+      user: member.userId,
+      state: "sent",
+    }));
+
+    const message = new Message({
+      sender,
+      chatRoom,
+      content,
+      messageType,
+      status,
+    });
+    await message.save();
+
+    const notifications = recipients.map((member) => ({
+      user: member.userId,
+      type: "message",
+      content: `New message from ${user.name}`,
+    }));
+    await Notification.create(notifications);
+
+    socket.emit("messageAck", { status: "sent", message });
+    io.to(chatRoom).emit("receiveMessage", message);
+  } catch (error) {
+    socket.emit("error", { message: error.message });
   }
 };

@@ -1,5 +1,8 @@
 import User from "../models/User.js";
 import ChatRoom from "../models/ChatRoom.js";
+import { writeLogToFile } from "../utils/logUtils.js";
+
+// RESTAPI CONTROLLERS
 
 export const readUsers = async (req, res) => {
   const users = await User.find();
@@ -58,5 +61,25 @@ export const deleteUser = async (req, res) => {
     res.status(200).json({ message: "User deleted" });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+// SOCKET CONTROLLERS
+
+export const connectedUser = async (_id) => {
+  try {
+    await User.findOneAndUpdate({ _id }, { status: "online" }, { new: true });
+  } catch (error) {
+    writeLogToFile(error);
+    console.error(error);
+  }
+};
+
+export const disconnectedUser = async (_id) => {
+  try {
+    await User.findOneAndUpdate({ _id }, { status: "offline" }, { new: true });
+  } catch (error) {
+    writeLogToFile(error);
+    console.error(error);
   }
 };

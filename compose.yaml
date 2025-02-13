@@ -7,14 +7,17 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+
 networks:
-  chatapplan:
+  chatapp:
     driver: bridge
+    attachable: true
+
 services:
   server:
     build:
       context: .
-    container_name: server.1.chatapp
+    container_name: server-1-chatapp
     restart: no
     depends_on:
       - redis
@@ -23,10 +26,10 @@ services:
     environment:
       HOST: 0.0.0.0
       NODE_ENV: production
-      MONGO_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/chatapp?authSource=${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb-chatapp:27017/chatapp?authSource=${MONGO_INITDB_ROOT_USERNAME}
+      REDIS_HOST: redis-chatapp
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_PORT: ${REDIS_PORT}
-      REDIS_HOST: redis-chatapp
     volumes:
       - ./logs.txt:/usr/src/app/logs.txt
     env_file:
@@ -34,7 +37,8 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - chatapplan
+      - default
+
   mongodb:
     image: mongo:latest
     container_name: mongodb-chatapp
@@ -42,24 +46,20 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: adminpassword
-    ports:
-      - "27017:27017"
     networks:
-      - chatapplan
+      - default
 
   redis:
     image: redis:latest
     container_name: redis-chatapp
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     env_file:
       - .env
     command: redis-server --requirepass ${REDIS_PASSWORD}
     networks:
-      - chatapplan
+      - default
 
   localtonet:
     image: localtonet/localtonet:latest
@@ -69,4 +69,4 @@ services:
       - .env
     command: ["authtoken", "${LOCALTONET_TOKEN}"]
     networks:
-      - chatapplan
+      - default

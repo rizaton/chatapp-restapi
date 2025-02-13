@@ -1,15 +1,17 @@
-import express, { json } from "express";
 import userRoutes from "./routes/userRoutes.js";
 import chatRoomRoutes from "./routes/chatRoomRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import callLogRoutes from "./routes/callLogRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+
 import cors from "cors";
+import express, { json } from "express";
 import swaggerUi from "swagger-ui-express";
+
 import swaggerSpec from "./swagger.js";
 
 import authRoutes from "./routes/authRoutes.js";
-import { protect } from "./middleware/authMiddleware.js";
+import { protect } from "./middlewares/authMiddleware.js";
 
 const app = express();
 
@@ -17,6 +19,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
+    methods: ["GET", "POST"],
   })
 );
 

@@ -20,7 +20,6 @@ export const generateRefreshToken = async (user) => {
   const refreshToken = jwt.sign(
     {
       userId: user._id,
-      email: user.email,
       password: user.password,
     },
     process.env.JWT_REFRESH,
