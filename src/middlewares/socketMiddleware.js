@@ -1,14 +1,15 @@
 import { verifyAccessToken } from "../utils/jwt.js";
 
 const socketAuthMiddleware = (socket, next) => {
-  const token = socket.handshake.auth?.token || socket.handshake.query?.token;
+  const authToken =
+    socket.handshake.auth?.token || socket.handshake.headers?.token;
 
-  if (!token) {
+  if (!authToken) {
     return next(new Error("Authentication error: Token required"));
   }
 
   try {
-    const decoded = verifyAccessToken(token);
+    const decoded = verifyAccessToken(authToken);
     socket.user = decoded;
     next();
   } catch (error) {
